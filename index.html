@@ -72,9 +72,14 @@ button:hover{transform:scale(1.05);}
   position:relative;
   box-shadow:0 0 20px var(--light);
   transform-style:preserve-3d;
-  animation:shake 2s infinite;
+  animation:shakeEnvelope 1.5s infinite;
 }
-@keyframes shake{0%,100%{transform:rotate(0deg)}50%{transform:rotate(1deg)}}
+@keyframes shakeEnvelope{
+  0%,100%{transform:translateX(0) rotate(0deg);}
+  25%{transform:translateX(-2px) rotate(-1deg);}
+  50%{transform:translateX(2px) rotate(1deg);}
+  75%{transform:translateX(-1px) rotate(-0.5deg);}
+}
 .flap{
   position:absolute;
   width:100%;
@@ -86,20 +91,6 @@ button:hover{transform:scale(1.05);}
   transform-style:preserve-3d;
 }
 .open .flap{transform:rotateX(180deg);}
-
-/* HEART */
-.heart{
-  position:absolute;
-  top:50%;
-  left:50%;
-  transform:translate(-50%,-50%);
-  font-size:25px;
-  cursor:pointer;
-  color:var(--pink);
-  text-shadow:0 0 15px var(--light);
-  animation:beat 1s infinite;
-}
-@keyframes beat{0%,100%{transform:translate(-50%,-50%) scale(1)}50%{transform:translate(-50%,-50%) scale(1.2)}}
 
 /* LETTER */
 .letter{
@@ -121,11 +112,29 @@ button:hover{transform:scale(1.05);}
   transform-style:preserve-3d;
   transition:1s;
 }
-.showLetter{
-  display:block;
-  transform:translateY(0%) rotateX(0deg);
-  transition:1s;
+.shakeLetter{
+  animation:shakeLetter 1.2s infinite;
 }
+@keyframes shakeLetter{
+  0%,100%{transform:translateY(-15%) rotate(0deg);}
+  25%{transform:translateY(-17%) rotate(-1deg);}
+  50%{transform:translateY(-13%) rotate(1deg);}
+  75%{transform:translateY(-16%) rotate(-0.5deg);}
+}
+
+/* HEART */
+.heart{
+  position:absolute;
+  top:50%;
+  left:50%;
+  transform:translate(-50%,-50%);
+  font-size:25px;
+  cursor:pointer;
+  color:var(--pink);
+  text-shadow:0 0 15px var(--light);
+  animation:beat 1s infinite;
+}
+@keyframes beat{0%,100%{transform:translate(-50%,-50%) scale(1)}50%{transform:translate(-50%,-50%) scale(1.2)}}
 
 /* CLOSE HEART */
 .closeHeart{
@@ -259,8 +268,6 @@ function moveNoButton(){
   clicks++;
   createHeart(noBtn.offsetLeft,noBtn.offsetTop);
   noBtn.style.position="absolute";
-
-  // safe margins to avoid overlap with "Please open me..." and "Okay"
   let safeTop=Math.random()*50 + 40; // 40%-90%
   let safeLeft=Math.random()*50 + 40; // 40%-90%
   noBtn.style.top=safeTop+"%";
@@ -268,7 +275,6 @@ function moveNoButton(){
   noBtn.style.transform=`scale(${1-clicks*0.15})`;
   if(clicks>=4) noBtn.style.display="none";
 }
-
 noBtn.onclick=moveNoButton;
 
 /* TYPE EFFECT */
@@ -311,6 +317,7 @@ yesBtn.onclick=()=>{
 openBtn.onclick=()=>{
   env.classList.add("open");
   letter.style.display="block";
+  letter.classList.add("shakeLetter");
   closeBtn.style.display="block";
   openBtn.style.display="none";
   typeText(`Hi Alessi,
@@ -323,6 +330,7 @@ Take your time reading this.`, text, 30);
 /* CLOSE LETTER */
 closeBtn.onclick=()=>{
   letter.style.display="none";
+  letter.classList.remove("shakeLetter");
   env.classList.remove("open");
   openBtn.style.display="block";
   closeBtn.style.display="none";
@@ -332,20 +340,6 @@ closeBtn.onclick=()=>{
     endMsg.innerText="I'm so proud of you.";
   },800);
 };
-
-/* MOBILE SWIPES */
-let touchstartX=0, touchendX=0;
-document.addEventListener('touchstart', e=>{touchstartX=e.changedTouches[0].screenX;});
-document.addEventListener('touchend', e=>{
-  touchendX=e.changedTouches[0].screenX;
-  if(touchendX<touchstartX-50){
-    nextScreen();
-  } else if(touchendX>touchstartX+50){
-    prevScreen();
-  }
-});
-function nextScreen(){console.log("swipe next");}
-function prevScreen(){console.log("swipe prev");}
 </script>
 </body>
 </html>
