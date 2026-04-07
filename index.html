@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>67</title>
+<title>For Alessi</title>
 
 <link href="https://fonts.googleapis.com/css2?family=Gloria+Hallelujah&family=Dancing+Script&display=swap" rel="stylesheet">
 
@@ -65,8 +65,8 @@ button:hover{transform:scale(1.05);}
 
 /* ENVELOPE */
 .envelope{
-  width:180px;
-  height:120px;
+  width:160px;
+  height:110px;
   background:#ffc0df;
   border-radius:10px;
   position:relative;
@@ -112,14 +112,29 @@ button:hover{transform:scale(1.05);}
   transform-style:preserve-3d;
   transition:1s;
 }
-.shakeLetter{
-  animation:shakeLetter 1.2s infinite;
+
+/* FLOATING LETTER EFFECT */
+.floatLetter{
+  animation:floatLetter 3s ease-in-out infinite alternate;
 }
-@keyframes shakeLetter{
-  0%,100%{transform:translateY(-15%) rotate(0deg);}
-  25%{transform:translateY(-17%) rotate(-1deg);}
-  50%{transform:translateY(-13%) rotate(1deg);}
-  75%{transform:translateY(-16%) rotate(-0.5deg);}
+@keyframes floatLetter{
+  0%{transform:translateY(-15%) rotateX(0deg) rotateZ(-1deg);}
+  50%{transform:translateY(-14%) rotateX(0deg) rotateZ(1deg);}
+  100%{transform:translateY(-15%) rotateX(0deg) rotateZ(-1deg);}
+}
+
+/* CLOSE HEART */
+.closeHeart{
+  position:absolute;
+  top:calc(50% + 120px); /* below letter */
+  left:50%;
+  transform:translateX(-50%);
+  font-size:30px;
+  cursor:pointer;
+  color:var(--pink);
+  text-shadow:0 0 15px var(--light);
+  animation:beat 1s infinite;
+  display:none;
 }
 
 /* HEART */
@@ -134,24 +149,12 @@ button:hover{transform:scale(1.05);}
   text-shadow:0 0 15px var(--light);
   animation:beat 1s infinite;
 }
-@keyframes beat{0%,100%{transform:translate(-50%,-50%) scale(1)}50%{transform:translate(-50%,-50%) scale(1.2)}}
-
-/* CLOSE HEART */
-.closeHeart{
-  margin-top:10px;
-  font-size:30px;
-  cursor:pointer;
-  color:var(--pink);
-  text-shadow:0 0 15px var(--light);
-  animation:beat 1s infinite;
-  display:none;
-}
 
 /* WHITE SCREEN */
 .white{
   background:white;
   color:var(--pink);
-  font-size:20px;
+  font-size:18px;
   text-align:center;
   padding:0 10px;
   word-break:normal;
@@ -179,7 +182,6 @@ button:hover{transform:scale(1.05);}
 @keyframes float{0%{opacity:1; transform:translateY(0) scale(1);}100%{opacity:0; transform:translateY(-35px) scale(1.2);}}
 </style>
 </head>
-
 <body>
 
 <!-- SCREEN 1 -->
@@ -207,11 +209,9 @@ button:hover{transform:scale(1.05);}
     <div class="flap"></div>
     <div class="heart" id="open">❤</div>
   </div>
-
   <div class="letter" id="letter">
     <div class="text" id="text"></div>
   </div>
-
   <div class="closeHeart" id="close">❤</div>
 </div>
 
@@ -268,10 +268,11 @@ function moveNoButton(){
   clicks++;
   createHeart(noBtn.offsetLeft,noBtn.offsetTop);
   noBtn.style.position="absolute";
-  let safeTop=Math.random()*50 + 40; // 40%-90%
-  let safeLeft=Math.random()*50 + 40; // 40%-90%
-  noBtn.style.top=safeTop+"%";
-  noBtn.style.left=safeLeft+"%";
+  // far corners only
+  const top = Math.random()<0.5 ? 10 : 70;
+  const left = Math.random()<0.5 ? 10 : 70;
+  noBtn.style.top=top+"%";
+  noBtn.style.left=left+"%";
   noBtn.style.transform=`scale(${1-clicks*0.15})`;
   if(clicks>=4) noBtn.style.display="none";
 }
@@ -317,7 +318,7 @@ yesBtn.onclick=()=>{
 openBtn.onclick=()=>{
   env.classList.add("open");
   letter.style.display="block";
-  letter.classList.add("shakeLetter");
+  letter.classList.add("floatLetter");
   closeBtn.style.display="block";
   openBtn.style.display="none";
   typeText(`Heyo,
@@ -334,14 +335,14 @@ Good luck in this next chapter, Sayang. Keep going, stay brave, and know that yo
 /* CLOSE LETTER */
 closeBtn.onclick=()=>{
   letter.style.display="none";
-  letter.classList.remove("shakeLetter");
+  letter.classList.remove("floatLetter");
   env.classList.remove("open");
   openBtn.style.display="block";
   closeBtn.style.display="none";
   setTimeout(()=>{
     s4.classList.add("hidden");
     s5.classList.remove("hidden");
-    endMsg.innerText="I'll be here. Always and in all ways.";
+    endMsg.innerText="I will be here for you. Always and in all ways.";
   },800);
 };
 </script>
