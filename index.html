@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>67</title>
 
-<link href="https://fonts.googleapis.com/css2?family=Patrick+Hand&family=Playfair+Display&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Gloria+Hallelujah&family=Dancing+Script&display=swap" rel="stylesheet">
 
 <style>
 :root{
@@ -17,9 +17,9 @@
 body{
   background: radial-gradient(circle, #ffd6ec, #ffb6d9);
   overflow:hidden;
-  font-family:'Patrick Hand', cursive;
+  font-family:'Gloria Hallelujah', cursive;
   position:relative;
-  -webkit-tap-highlight-color: transparent;
+  perspective:1200px;
 }
 
 /* SCREENS */
@@ -31,7 +31,7 @@ body{
   flex-direction:column;
   align-items:center;
   justify-content:center;
-  transition:1s;
+  transition:all 0.8s ease;
 }
 .hidden{opacity:0;pointer-events:none;}
 
@@ -59,7 +59,6 @@ button{
   cursor:pointer;
   box-shadow:0 0 12px var(--light);
   transition:0.4s;
-  font-family:'Patrick Hand', cursive;
   margin:0 8px;
 }
 button:hover{transform:scale(1.05);}
@@ -112,7 +111,7 @@ button:hover{transform:scale(1.05);}
   box-shadow:0 0 20px var(--light);
   padding:15px;
   overflow-y:auto;
-  font-family:'Playfair Display', serif;
+  font-family:'Dancing Script', cursive;
   color:var(--pink);
   font-size:16px;
   line-height:1.5;
@@ -143,21 +142,22 @@ button:hover{transform:scale(1.05);}
 .white{
   background:white;
   color:var(--pink);
-  font-size:24px;
+  font-size:20px;
   text-align:center;
   padding:0 10px;
   word-break:normal;
 }
 
-/* CURSOR */
-.cursor{
-  display:inline-block;
-  width:2px;
-  height:16px;
-  background:var(--pink);
-  animation:blink 1s infinite;
+/* CURSOR LIGHT */
+.cursorLight{
+  position:absolute;
+  width:100px;
+  height:100px;
+  border-radius:50%;
+  background:radial-gradient(circle, rgba(255,126,182,0.3), rgba(255,126,182,0));
+  pointer-events:none;
+  mix-blend-mode:screen;
 }
-@keyframes blink{0%,50%,100%{opacity:1}25%,75%{opacity:0}}
 
 /* FLOATING HEARTS */
 .floatingHeart{
@@ -211,6 +211,8 @@ button:hover{transform:scale(1.05);}
   <div id="endMsg"></div>
 </div>
 
+<div class="cursorLight" id="cursorLight"></div>
+
 <script>
 let s1=document.getElementById("s1"),
     s2=document.getElementById("s2"),
@@ -226,9 +228,20 @@ let s1=document.getElementById("s1"),
     openBtn=document.getElementById("open"),
     closeBtn=document.getElementById("close"),
     text=document.getElementById("text"),
-    endMsg=document.getElementById("endMsg");
+    endMsg=document.getElementById("endMsg"),
+    cursorLight=document.getElementById("cursorLight");
 
 let clicks=0;
+
+/* CURSOR LIGHT */
+document.addEventListener('mousemove', e=>{
+  cursorLight.style.left=e.clientX-50+'px';
+  cursorLight.style.top=e.clientY-50+'px';
+});
+document.addEventListener('touchmove', e=>{
+  cursorLight.style.left=e.touches[0].clientX-50+'px';
+  cursorLight.style.top=e.touches[0].clientY-50+'px';
+});
 
 /* FLOATING HEART */
 function createHeart(x,y){
@@ -241,20 +254,38 @@ function createHeart(x,y){
   setTimeout(()=>{h.remove()},1000);
 }
 
-/* SCREEN 1 INTERACTIVE NO */
-noBtn.onclick=()=>{
+/* SAFE AREAS FOR NO BUTTON */
+function moveNoButton(){
   clicks++;
   createHeart(noBtn.offsetLeft,noBtn.offsetTop);
   noBtn.style.position="absolute";
-  let safeTop=Math.random()*50+10; 
-  let safeLeft=Math.random()*50+10;
+
+  // safe margins to avoid overlap with "Please open me..." and "Okay"
+  let safeTop=Math.random()*50 + 40; // 40%-90%
+  let safeLeft=Math.random()*50 + 40; // 40%-90%
   noBtn.style.top=safeTop+"%";
   noBtn.style.left=safeLeft+"%";
   noBtn.style.transform=`scale(${1-clicks*0.15})`;
   if(clicks>=4) noBtn.style.display="none";
-};
+}
 
-/* SCREEN 1 YES */
+noBtn.onclick=moveNoButton;
+
+/* TYPE EFFECT */
+function typeText(str, el, speed, cb){
+  el.innerHTML="";
+  let i=0;
+  let cursor=document.createElement("span");
+  cursor.className="cursor";
+  el.appendChild(cursor);
+  let int=setInterval(()=>{
+    cursor.insertAdjacentText("beforebegin",str[i]);
+    i++;
+    if(i>=str.length){clearInterval(int);if(cb) cb();}
+  },speed);
+}
+
+/* SCREEN FLOW */
 yesBtn.onclick=()=>{
   createHeart(yesBtn.offsetLeft,yesBtn.offsetTop);
   s1.classList.add("hidden");
@@ -276,20 +307,6 @@ yesBtn.onclick=()=>{
   });
 };
 
-/* TYPE EFFECT */
-function typeText(str, el, speed, cb){
-  el.innerHTML="";
-  let i=0;
-  let cursor=document.createElement("span");
-  cursor.className="cursor";
-  el.appendChild(cursor);
-  let int=setInterval(()=>{
-    cursor.insertAdjacentText("beforebegin",str[i]);
-    i++;
-    if(i>=str.length){clearInterval(int);if(cb) cb();}
-  },speed);
-}
-
 /* OPEN LETTER */
 openBtn.onclick=()=>{
   env.classList.add("open");
@@ -309,13 +326,26 @@ closeBtn.onclick=()=>{
   env.classList.remove("open");
   openBtn.style.display="block";
   closeBtn.style.display="none";
-
   setTimeout(()=>{
     s4.classList.add("hidden");
     s5.classList.remove("hidden");
-    endMsg.innerHTML="I'm so proud of you."; // fixed one-line
+    endMsg.innerText="I'm so proud of you.";
   },800);
 };
+
+/* MOBILE SWIPES */
+let touchstartX=0, touchendX=0;
+document.addEventListener('touchstart', e=>{touchstartX=e.changedTouches[0].screenX;});
+document.addEventListener('touchend', e=>{
+  touchendX=e.changedTouches[0].screenX;
+  if(touchendX<touchstartX-50){
+    nextScreen();
+  } else if(touchendX>touchstartX+50){
+    prevScreen();
+  }
+});
+function nextScreen(){console.log("swipe next");}
+function prevScreen(){console.log("swipe prev");}
 </script>
 </body>
 </html>
