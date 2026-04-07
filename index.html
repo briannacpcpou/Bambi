@@ -1,0 +1,341 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>67</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Patrick+Hand&family=Playfair+Display&display=swap" rel="stylesheet">
+
+<style>
+:root{
+  --pink:#ff7eb6;
+  --light:#ffc0df;
+}
+
+*{margin:0;padding:0;box-sizing:border-box;}
+body{
+  background: radial-gradient(circle, #ffd6ec, #ffb6d9);
+  overflow:hidden;
+  font-family:'Patrick Hand', cursive;
+  position:relative;
+}
+
+/* SCREENS */
+.screen{
+  position:absolute;
+  width:100%;
+  height:100vh;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  transition:1s;
+}
+.hidden{opacity:0;pointer-events:none;}
+
+/* BOX */
+.box{
+  border:2px solid var(--light);
+  padding:15px 30px;
+  border-radius:15px;
+  box-shadow:0 0 25px var(--light);
+  margin-bottom:20px;
+  color:var(--pink);
+  font-size:24px;
+  min-width:180px;
+  text-align:center;
+}
+
+/* BUTTON */
+button{
+  padding:10px 25px;
+  border-radius:20px;
+  border:2px solid var(--light);
+  background:transparent;
+  color:var(--pink);
+  font-size:24px;
+  cursor:pointer;
+  box-shadow:0 0 15px var(--light);
+  transition:0.4s;
+  font-family:'Patrick Hand', cursive;
+  margin:0 10px;
+}
+
+/* CENTER BUTTONS */
+.center{
+  position:absolute;
+  left:50%;
+  transform:translateX(-50%);
+}
+
+/* ENVELOPE */
+.envelope{
+  width:240px;
+  height:160px;
+  background:#ffc0df;
+  border-radius:10px;
+  position:relative;
+  box-shadow:0 0 30px var(--light);
+  transform-style:preserve-3d;
+  animation:shake 2s infinite;
+}
+@keyframes shake{
+  0%,100%{transform:rotate(0deg)}
+  50%{transform:rotate(1deg)}
+}
+.flap{
+  position:absolute;
+  width:100%;
+  height:100%;
+  background:#ff9ecf;
+  clip-path:polygon(0 0, 50% 50%, 100% 0);
+  transform-origin:top;
+  transition:0.8s;
+  transform-style:preserve-3d;
+}
+.open .flap{transform:rotateX(180deg);}
+
+/* HEART */
+.heart{
+  position:absolute;
+  top:50%;
+  left:50%;
+  transform:translate(-50%,-50%);
+  font-size:30px;
+  cursor:pointer;
+  color:var(--pink);
+  text-shadow:0 0 20px var(--light);
+  animation:beat 1s infinite;
+}
+@keyframes beat{
+  0%,100%{transform:translate(-50%,-50%) scale(1)}
+  50%{transform:translate(-50%,-50%) scale(1.2)}
+}
+
+/* LETTER */
+.letter{
+  width:90%;
+  max-width:500px;
+  height:60vh;
+  background:#ffe4f2;
+  border-radius:10px;
+  box-shadow:0 0 30px var(--light);
+  padding:20px;
+  overflow-y:auto;
+  font-family:'Playfair Display', serif;
+  color:var(--pink);
+  font-size:18px;
+  line-height:1.6;
+  white-space:pre-wrap;
+  display:none;
+  transform:translateY(-20%) rotateX(0deg);
+  transform-style:preserve-3d;
+  transition:1s;
+  animation:shakePaper 2s infinite;
+}
+.showLetter{
+  display:block;
+  transform:translateY(0%) rotateX(0deg);
+  transition:1s;
+}
+@keyframes shakePaper{
+  0%,100%{transform:translateY(-5px) rotate(0deg);}
+  50%{transform:translateY(5px) rotate(0.5deg);}
+}
+
+/* CLOSE HEART */
+.closeHeart{
+  margin-top:15px;
+  font-size:35px;
+  cursor:pointer;
+  color:var(--pink);
+  text-shadow:0 0 20px var(--light);
+  animation:beat 1s infinite;
+  display:none;
+}
+
+/* WHITE SCREEN */
+.white{
+  background:white;
+  color:var(--pink);
+  font-size:32px;
+}
+
+/* CURSOR */
+.cursor{
+  display:inline-block;
+  width:2px;
+  height:18px;
+  background:var(--pink);
+  animation:blink 1s infinite;
+}
+@keyframes blink{
+  0%,50%,100%{opacity:1}
+  25%,75%{opacity:0}
+}
+
+/* FLOATING HEARTS */
+.floatingHeart{
+  position:absolute;
+  color:var(--pink);
+  font-size:16px;
+  animation:float 1s forwards;
+  pointer-events:none;
+}
+@keyframes float{
+  0%{opacity:1; transform:translateY(0) scale(1);}
+  100%{opacity:0; transform:translateY(-40px) scale(1.3);}
+}
+</style>
+</head>
+
+<body>
+
+<!-- SCREEN 1 -->
+<div id="s1" class="screen">
+  <div class="box">Please open me...</div>
+  <div>
+    <button id="yes">Okay</button>
+    <button id="no">No</button>
+  </div>
+</div>
+
+<!-- SCREEN 2 -->
+<div id="s2" class="screen hidden white">
+  <div id="msg"></div>
+</div>
+
+<!-- SCREEN 3 -->
+<div id="s3" class="screen hidden white">
+  <div id="msg2"></div>
+</div>
+
+<!-- SCREEN 4 -->
+<div id="s4" class="screen hidden">
+  <div class="envelope" id="env">
+    <div class="flap"></div>
+    <div class="heart" id="open">❤</div>
+  </div>
+
+  <div class="letter" id="letter">
+    <div class="text" id="text"></div>
+  </div>
+
+  <div class="closeHeart" id="close">❤</div>
+</div>
+
+<!-- FINAL SCREEN -->
+<div id="s5" class="screen hidden white">
+  <div id="endMsg" class="center"></div>
+</div>
+
+<script>
+let s1=document.getElementById("s1"),
+    s2=document.getElementById("s2"),
+    s3=document.getElementById("s3"),
+    s4=document.getElementById("s4"),
+    s5=document.getElementById("s5"),
+    no=document.getElementById("no"),
+    yes=document.getElementById("yes"),
+    msg=document.getElementById("msg"),
+    msg2=document.getElementById("msg2"),
+    endMsg=document.getElementById("endMsg"),
+    env=document.getElementById("env"),
+    letter=document.getElementById("letter"),
+    open=document.getElementById("open"),
+    close=document.getElementById("close"),
+    text=document.getElementById("text");
+
+let clicks=0;
+
+/* FLOATING HEART */
+function createHeart(x,y){
+  let h=document.createElement('div');
+  h.className='floatingHeart';
+  h.style.left=x+'px';
+  h.style.top=y+'px';
+  document.body.appendChild(h);
+  setTimeout(()=>{h.remove()},1000);
+}
+
+/* SCREEN 1 INTERACTIVE NO */
+no.onclick=()=>{
+  clicks++;
+  createHeart(no.offsetLeft,no.offsetTop);
+  no.style.position="absolute";
+  no.style.top=Math.random()*70+"%";
+  no.style.left=Math.random()*70+"%";
+  no.style.transform=`scale(${1-clicks*0.15})`;
+  if(clicks>=4) no.style.display="none";
+};
+
+/* SCREEN 1 YES */
+yes.onclick=()=>{
+  createHeart(yes.offsetLeft,yes.offsetTop);
+  s1.classList.add("hidden");
+  s2.classList.remove("hidden");
+  type("Alessi, this is for you.", msg, 120, ()=>{
+    setTimeout(()=>{
+      s2.classList.add("hidden");
+      s3.classList.remove("hidden");
+      type("Please take your time in reading.", msg2,120,()=>{
+        setTimeout(()=>{
+          s3.classList.add("hidden");
+          s4.classList.remove("hidden");
+          open.style.display="block";
+          close.style.display="none";
+          letter.style.display="none";
+        },1500);
+      });
+    },1500);
+  });
+};
+
+/* TYPE EFFECT */
+function type(str, el, speed, cb){
+  el.innerHTML="";
+  let i=0;
+  let cursor=document.createElement("span");
+  cursor.className="cursor";
+  el.appendChild(cursor);
+  let int=setInterval(()=>{
+    cursor.insertAdjacentText("beforebegin",str[i]);
+    i++;
+    if(i>=str.length){clearInterval(int); if(cb) cb();}
+  },speed);
+}
+
+/* ENVELOPE CLICK */
+open.onclick=()=>{
+  env.classList.add("open");
+  letter.style.display="block";
+  close.style.display="block";
+  open.style.display="none";
+  type(`Hi Alessi,
+
+This is where your message will go.
+
+Take your time reading this.`, text, 35);
+};
+
+/* CLOSE LETTER */
+close.onclick=()=>{
+  letter.style.display="none";
+  env.classList.remove("open");
+  open.style.display="block";
+  close.style.display="none";
+
+  setTimeout(()=>{
+    s4.classList.add("hidden");
+    s5.classList.remove("hidden");
+    type("I'm so proud of you.", endMsg,120,()=>{
+      setTimeout(()=>{
+        s5.innerHTML='<div class="heart" style="font-size:22px; color:var(--pink); text-shadow:0 0 20px var(--light); animation:beat 1s infinite;">❤</div>';
+      },1500);
+    });
+  },800);
+};
+</script>
+</body>
+</html>
